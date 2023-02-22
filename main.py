@@ -1,55 +1,58 @@
+from function import*
+import time
+
+now = time.strftime("%A %B %d, %Y %H:%M:%S")
+print('It is ',now)
+
 
 while True:
-    useraction=input(' Show, Add, Edit, Complete, or Exit: ')
-    useraction=useraction.strip()
+    useraction = input(' Show, Add, Edit, Complete, or Exit: ')
+    useraction = useraction.strip()
 
+    if useraction.startswith("add"):
+        todo = useraction[4:] + '\n'
 
-    if 'add' in useraction or 'new' in useraction:
-      todo = useraction[4:]+"\n"
+        todos = get_todos()
 
+        todos.append(todo)
 
-      with open('files/todos.txt', 'r') as file:
-           todos=file.readlines()
+        write_todos(todos)
 
-      todos.append(todo)
+    elif useraction.startswith('show'):
+        todos = get_todos()
 
+        for index, item in enumerate(todos):
+            item = item.strip('\n')
+            print(f"{index + 1}.{item.title()}")
 
-      with open('files/todos.txt', 'w') as file:
-          file.writelines(todos)
+    elif useraction.startswith('edit'):
+        try:
+            todo_number = int(useraction[5:])
 
+            replaced_todo = input('please replace your new item: ')
+            todos = get_todos()
 
+            todos[todo_number - 1] = replaced_todo + '\n'
+            write_todos(todos)
+        except ValueError:
+            print('wrong command')
+            continue
 
+    elif useraction.startswith('complete'):
+        try:
+            todo_number = int(useraction[9:])
 
-    elif 'show' in useraction:
-        with open('files/todos.txt', 'r') as file:
-             todos=file.readlines()
+            todos = get_todos()
 
-
-        for index,item in enumerate(todos):
-            item=item.strip('\n')
-            print(f"{index+1}.{item.title()}")
-
-    elif 'edit' in useraction:
-       todo_number= int(useraction[5:])
-
-       replaced_todo=input('please replace your new todo: ')
-       with open('files/todos.txt', 'r') as file:
-           todos = file.readlines()
-
-       todos[todo_number-1]= replaced_todo+'\n'
-       with open('files/todos.txt', 'w') as file:
-           file.writelines(todos)
-
-    elif 'complete' in useraction:
-       todo_number = int(useraction[9:])
-       with open('files/todos.txt', 'r') as file:
-           todos = file.readlines()
-
-       todos.pop(todo_number-1)
-       with open('files/todos.txt', 'w') as file:
-           file.writelines(todos)
-
+            todos.pop(todo_number - 1)
+            write_todos(todos)
+        except IndexError:
+            print('There is no item with that number')
+            continue
+        except ValueError:
+            print('wrong command')
+            continue
 
     elif 'exit' in useraction:
-      break
+        break
 print('Bye')
